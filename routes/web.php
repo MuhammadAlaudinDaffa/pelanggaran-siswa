@@ -21,6 +21,7 @@ use App\Http\Controllers\Kesiswaan\KesiswaanPrestasi;
 use App\Http\Controllers\Kesiswaan\KesiswaanSanksi;
 use App\Http\Controllers\Kesiswaan\KesiswaanPelaksanaanSanksi;
 use App\Http\Controllers\Kesiswaan\MonitoringPelanggaranController;
+use App\Http\Controllers\Kesiswaan\SiswaOverviewController;
 
 use App\Http\Controllers\KepalaSekolah\KepalaSekolahDashboard;
 use App\Http\Controllers\Siswa\SiswaDashboard;
@@ -76,7 +77,7 @@ Route::middleware('admin')->name('admin.')->group(function () {
     Route::resource('admin/kesiswaan/sanksi', KesiswaanSanksi::class)->names('kesiswaan.sanksi');
     Route::resource('admin/kesiswaan/pelaksanaan-sanksi', KesiswaanPelaksanaanSanksi::class)->names('kesiswaan.pelaksanaan_sanksi');
     Route::resource('admin/kesiswaan/monitoring-pelanggaran', MonitoringPelanggaranController::class)->names('kesiswaan.monitoring_pelanggaran');
-    Route::resource('admin/kesiswaan/siswa-overview', \App\Http\Controllers\Kesiswaan\SiswaOverviewController::class)->names('kesiswaan.siswa_overview')->only(['index', 'show']);
+    Route::resource('admin/kesiswaan/siswa-overview', SiswaOverviewController::class)->names('kesiswaan.siswa_overview')->only(['index', 'show']);
     
     Route::resource('admin/bimbingan-konseling/bk', BimbinganKonselingBK::class)->names('bimbingan_konseling.bk');
     Route::post('admin/bimbingan-konseling/bk/{bk}/ambil', [BimbinganKonselingBK::class, 'ambil'])->name('bimbingan_konseling.bk.ambil');
@@ -93,7 +94,7 @@ Route::middleware('kepala_sekolah')->name('kepala_sekolah.')->group(function () 
     Route::resource('kepala-sekolah/kesiswaan/sanksi', KesiswaanSanksi::class)->names('kesiswaan.sanksi')->only(['index', 'show']);
     Route::resource('kepala-sekolah/kesiswaan/pelaksanaan-sanksi', KesiswaanPelaksanaanSanksi::class)->names('kesiswaan.pelaksanaan_sanksi')->only(['index', 'show']);
     Route::resource('kepala-sekolah/kesiswaan/monitoring-pelanggaran', MonitoringPelanggaranController::class)->names('kesiswaan.monitoring_pelanggaran');
-    Route::resource('kepala-sekolah/kesiswaan/siswa-overview', \App\Http\Controllers\Kesiswaan\SiswaOverviewController::class)->names('kesiswaan.siswa_overview')->only(['index', 'show']);
+    Route::resource('kepala-sekolah/kesiswaan/siswa-overview', SiswaOverviewController::class)->names('kesiswaan.siswa_overview')->only(['index', 'show']);
     Route::get('kepala-sekolah/guru/info-kelas', [\App\Http\Controllers\Guru\InfoKelasController::class, 'index'])->name('guru.info_kelas.index');
     Route::post('kepala-sekolah/guru/info-kelas', [\App\Http\Controllers\Guru\InfoKelasController::class, 'store'])->name('guru.info_kelas.store');
 });
@@ -109,7 +110,7 @@ Route::middleware('kesiswaan')->name('kesiswaan.')->group(function () {
     Route::resource('kesiswaan/kesiswaan/sanksi', KesiswaanSanksi::class)->names('kesiswaan.sanksi');
     Route::resource('kesiswaan/kesiswaan/pelaksanaan-sanksi', KesiswaanPelaksanaanSanksi::class)->names('kesiswaan.pelaksanaan_sanksi');
     Route::resource('kesiswaan/kesiswaan/monitoring-pelanggaran', MonitoringPelanggaranController::class)->names('kesiswaan.monitoring_pelanggaran');
-    Route::resource('kesiswaan/kesiswaan/siswa-overview', \App\Http\Controllers\Kesiswaan\SiswaOverviewController::class)->names('kesiswaan.siswa_overview')->only(['index', 'show']);
+    Route::resource('kesiswaan/kesiswaan/siswa-overview', SiswaOverviewController::class)->names('kesiswaan.siswa_overview')->only(['index', 'show']);
     Route::get('kesiswaan/guru/info-kelas', [\App\Http\Controllers\Guru\InfoKelasController::class, 'index'])->name('guru.info_kelas.index');
     Route::post('kesiswaan/guru/info-kelas', [\App\Http\Controllers\Guru\InfoKelasController::class, 'store'])->name('guru.info_kelas.store');
 });
@@ -127,7 +128,7 @@ Route::middleware('bimbingan_konseling')->name('bimbingan_konseling.')->group(fu
 Route::middleware('guru')->name('guru.')->group(function () {
     Route::get('guru/guru/info-kelas', [\App\Http\Controllers\Guru\InfoKelasController::class, 'index'])->name('guru.info_kelas.index');
     Route::post('guru/guru/info-kelas', [\App\Http\Controllers\Guru\InfoKelasController::class, 'store'])->name('guru.info_kelas.store');
-    Route::resource('guru/kesiswaan/siswa-overview', \App\Http\Controllers\Kesiswaan\SiswaOverviewController::class)->names('kesiswaan.siswa_overview')->only(['index', 'show']);
+    Route::resource('guru/kesiswaan/siswa-overview', SiswaOverviewController::class)->names('kesiswaan.siswa_overview')->only(['index', 'show']);
     Route::resource('guru/kesiswaan/pelanggaran', KesiswaanPelanggaran::class)->names('kesiswaan.pelanggaran');
     Route::resource('guru/kesiswaan/prestasi', KesiswaanPrestasi::class)->names('kesiswaan.prestasi')->only(['index', 'show']);
 });
@@ -135,7 +136,7 @@ Route::middleware('guru')->name('guru.')->group(function () {
 // Orang Tua
 Route::middleware('orang_tua')->name('orang_tua.')->group(function () {
     Route::resource('orang-tua/bimbingan-konseling/bk', BimbinganKonselingBK::class)->names('bimbingan_konseling.bk')->only(['index', 'show']);
-    Route::get('orang-tua/kesiswaan/siswa-overview/{user}', [\App\Http\Controllers\Kesiswaan\SiswaOverviewController::class, 'showForOrangTua'])->name('kesiswaan.siswa_overview.show');
+    Route::get('orang-tua/kesiswaan/siswa-overview/{user}', [SiswaOverviewController::class, 'showForOrangTua'])->name('kesiswaan.siswa_overview.show');
     Route::resource('orang-tua/kesiswaan/pelanggaran', KesiswaanPelanggaran::class)->names('kesiswaan.pelanggaran')->only(['index', 'show']);
     Route::resource('orang-tua/kesiswaan/prestasi', KesiswaanPrestasi::class)->names('kesiswaan.prestasi')->only(['index', 'show']);
 });
@@ -144,7 +145,7 @@ Route::middleware('orang_tua')->name('orang_tua.')->group(function () {
 Route::middleware('siswa')->name('siswa.')->group(function () {
     Route::resource('siswa/bimbingan-konseling/bk', BimbinganKonselingBK::class)->names('bimbingan_konseling.bk')->only(['index', 'create', 'store', 'show', 'edit', 'update']);
     Route::post('siswa/bimbingan-konseling/bk/{bk}/reply', [BimbinganKonselingBK::class, 'reply'])->name('bimbingan_konseling.bk.reply');
-    Route::get('siswa/kesiswaan/siswa-overview/{user}', [\App\Http\Controllers\Kesiswaan\SiswaOverviewController::class, 'show'])->name('kesiswaan.siswa_overview.show');
+    Route::get('siswa/kesiswaan/siswa-overview/{user}', [SiswaOverviewController::class, 'show'])->name('kesiswaan.siswa_overview.show');
     Route::resource('siswa/kesiswaan/pelanggaran', KesiswaanPelanggaran::class)->names('kesiswaan.pelanggaran')->only(['index', 'show']);
     Route::resource('siswa/kesiswaan/prestasi', KesiswaanPrestasi::class)->names('kesiswaan.prestasi')->only(['index', 'show']);
 });

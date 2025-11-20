@@ -34,21 +34,21 @@
                                         <td class="fw-semibold">Status Pelanggaran:</td>
                                         <td>
                                             @php
-    $status = '';
-    $badgeClass = '';
-    if ($sanksi->pelanggaran->poin >= 1 && $sanksi->pelanggaran->poin <= 15) {
-        $status = 'Ringan';
-        $badgeClass = 'bg-info';
-    } elseif ($sanksi->pelanggaran->poin >= 16 && $sanksi->pelanggaran->poin <= 30) {
-        $status = 'Sedang';
-        $badgeClass = 'bg-warning';
-    } elseif ($sanksi->pelanggaran->poin >= 31 && $sanksi->pelanggaran->poin <= 50) {
-        $status = 'Berat';
-        $badgeClass = 'bg-danger';
-    } elseif ($sanksi->pelanggaran->poin >= 51) {
-        $status = 'Sangat Berat';
-        $badgeClass = 'bg-dark';
-    }
+                                                $status = '';
+                                                $badgeClass = '';
+                                                if ($sanksi->pelanggaran->poin >= 1 && $sanksi->pelanggaran->poin <= 15) {
+                                                    $status = 'Ringan';
+                                                    $badgeClass = 'bg-info';
+                                                } elseif ($sanksi->pelanggaran->poin >= 16 && $sanksi->pelanggaran->poin <= 30) {
+                                                    $status = 'Sedang';
+                                                    $badgeClass = 'bg-warning';
+                                                } elseif ($sanksi->pelanggaran->poin >= 31 && $sanksi->pelanggaran->poin <= 50) {
+                                                    $status = 'Berat';
+                                                    $badgeClass = 'bg-danger';
+                                                } elseif ($sanksi->pelanggaran->poin >= 51) {
+                                                    $status = 'Sangat Berat';
+                                                    $badgeClass = 'bg-dark';
+                                                }
                                             @endphp
                                             <span class="badge {{ $badgeClass }} rounded-3 fw-semibold">{{ $status }} -
                                                 {{ $sanksi->pelanggaran->poin }}</span>

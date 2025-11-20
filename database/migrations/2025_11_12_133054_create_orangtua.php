@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('nama_orangtua');
             $table->string('pekerjaan')->nullable();
             $table->string('pendidikan')->nullable();
-            $table->string('no_telp')->nullable();
+            $table->string('no_telp');
             $table->string('alamat')->nullable();
             $table->dateTime('created_at')->useCurrent();
         });

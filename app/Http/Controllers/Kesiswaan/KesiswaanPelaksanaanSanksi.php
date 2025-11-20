@@ -116,7 +116,7 @@ class KesiswaanPelaksanaanSanksi extends Controller
 
         $pelaksanaanSanksi->update($data);
 
-        return redirect()->to(\App\Helpers\RouteHelper::route('kesiswaan.pelaksanaan_sanksi.show', ['pelaksanaan' => $request->sanksi_id]))
+        return redirect()->to(\App\Helpers\RouteHelper::route('kesiswaan.pelaksanaan_sanksi.show', $pelaksanaanSanksi->pelaksanaan_id))
             ->with('success', 'Pelaksanaan sanksi berhasil diperbarui');
     }
 

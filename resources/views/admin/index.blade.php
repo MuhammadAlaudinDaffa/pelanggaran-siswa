@@ -13,6 +13,60 @@
 		</div>
 	</div>
 	
+	<!-- Sales Overview Chart -->
+	<div class="row mb-4">
+		<div class="col-lg-8 d-flex align-items-stretch">
+			<div class="card w-100">
+				<div class="card-body">
+					<div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
+						<div class="mb-3 mb-sm-0">
+							<h5 class="card-title fw-semibold">Overview Pelanggaran & Prestasi</h5>
+						</div>
+						<div>
+							<form method="GET" action="{{ route('admin.index') }}">
+								<select class="form-select" name="tahun_ajaran" onchange="this.form.submit()">
+									@foreach($tahunAjaran as $tahun)
+										<option value="{{ $tahun->tahun_ajaran_id }}" {{ $selectedTahun == $tahun->tahun_ajaran_id ? 'selected' : '' }}>
+											{{ $tahun->tahun_ajaran }} - {{ $tahun->semester }}
+										</option>
+									@endforeach
+								</select>
+							</form>
+						</div>
+					</div>
+					<div id="chart"></div>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-4">
+			<div class="card h-100">
+				<div class="card-body">
+					<h5 class="card-title mb-3"><i class="ti ti-chart-bar me-2"></i>Statistik Bulan Ini</h5>
+					<div class="row g-3">
+						<div class="col-12">
+							<div class="d-flex align-items-center p-3 bg-light-danger rounded">
+								<i class="ti ti-alert-triangle text-danger fs-4 me-3"></i>
+								<div>
+									<h4 class="mb-0 text-danger">{{ \App\Models\Pelanggaran::where('status_verifikasi', 'diverifikasi')->whereMonth('created_at', now()->month)->count() }}</h4>
+									<small class="text-muted">Pelanggaran Bulan Ini</small>
+								</div>
+							</div>
+						</div>
+						<div class="col-12">
+							<div class="d-flex align-items-center p-3 bg-light-success rounded">
+								<i class="ti ti-trophy text-success fs-4 me-3"></i>
+								<div>
+									<h4 class="mb-0 text-success">{{ \App\Models\Prestasi::where('status_verifikasi', 'diverifikasi')->whereMonth('created_at', now()->month)->count() }}</h4>
+									<small class="text-muted">Prestasi Bulan Ini</small>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
 	<!-- Data Master Section -->
 	<div class="row">
 		<!-- Academic Data Card -->
@@ -237,3 +291,75 @@
 		</div>
 	</div>
 @endsection
+
+@push('scripts')
+<script>
+	// Chart data from PHP
+	const chartData = @json($chartData);
+	
+	// Chart configuration
+	const options = {
+		series: [{
+			name: 'Pelanggaran',
+			data: chartData.pelanggaran,
+			color: '#dc3545'
+		}, {
+			name: 'Prestasi',
+			data: chartData.prestasi,
+			color: '#198754'
+		}],
+		chart: {
+			type: 'area',
+			height: 350,
+			toolbar: {
+				show: false
+			}
+		},
+		dataLabels: {
+			enabled: false
+		},
+		stroke: {
+			curve: 'smooth',
+			width: 2
+		},
+		xaxis: {
+			categories: chartData.months,
+			labels: {
+				style: {
+					colors: '#8c8c8c',
+					fontSize: '12px'
+				}
+			}
+		},
+		yaxis: {
+			labels: {
+				style: {
+					colors: '#8c8c8c',
+					fontSize: '12px'
+				}
+			}
+		},
+		legend: {
+			position: 'top',
+			horizontalAlign: 'left'
+		},
+		fill: {
+			type: 'gradient',
+			gradient: {
+				shadeIntensity: 1,
+				opacityFrom: 0.7,
+				opacityTo: 0.3,
+				stops: [0, 90, 100]
+			}
+		},
+		grid: {
+			borderColor: '#e7e7e7',
+			strokeDashArray: 5
+		}
+	};
+	
+	// Render chart
+	const chart = new ApexCharts(document.querySelector("#chart"), options);
+	chart.render();
+</script>
+@endpush
