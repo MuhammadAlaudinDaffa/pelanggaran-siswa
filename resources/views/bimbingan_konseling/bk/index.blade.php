@@ -82,8 +82,15 @@
                                         <td class="border-bottom-0">{{ $loop->iteration }}</td>
                                         @if(Auth::user()->level !== 'siswa')
                                             <td class="border-bottom-0">
-                                                <h6 class="fw-semibold mb-0">{{ $item->siswa->nama_siswa }}</h6>
-                                                <span class="fw-normal">{{ $item->siswa->nis }}</span>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <div>
+                                                        <h6 class="fw-semibold mb-0">{{ $item->siswa->nama_siswa }}</h6>
+                                                        <span class="fw-normal">{{ $item->siswa->nis }}</span>
+                                                    </div>
+                                                    @if($item->status === 'menunggu' && ($item->guru_konselor || $item->konselor_user_id))
+                                                        <i class="ti ti-user-check text-success" title="Sudah diklaim konselor"></i>
+                                                    @endif
+                                                </div>
                                             </td>
                                         @endif
                                         <td class="border-bottom-0">
