@@ -95,9 +95,10 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="tanggal_mulai" class="form-label">Tanggal Mulai <span class="text-danger">*</span></label>
+                                    <label for="tanggal_mulai" class="form-label">Tanggal Mulai</label>
                                     <input type="date" class="form-control @error('tanggal_mulai') is-invalid @enderror" 
-                                           name="tanggal_mulai" id="tanggal_mulai" value="{{ old('tanggal_mulai') }}" required>
+                                           name="tanggal_mulai" id="tanggal_mulai" value="{{ old('tanggal_mulai') }}">
+                                    <small class="text-muted">Kosongkan jika belum direncanakan.</small>
                                     @error('tanggal_mulai')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -107,7 +108,8 @@
                                 <div class="mb-3">
                                     <label for="tanggal_selesai" class="form-label">Tanggal Selesai</label>
                                     <input type="date" class="form-control @error('tanggal_selesai') is-invalid @enderror" 
-                                           name="tanggal_selesai" id="tanggal_selesai" value="{{ old('tanggal_selesai') }}">
+                                           name="tanggal_selesai" id="tanggal_selesai" value="{{ old('tanggal_selesai') }}" readonly>
+                                    <small class="text-muted">Otomatis terisi saat status 'Selesai' atau 'Dibatalkan'</small>
                                     @error('tanggal_selesai')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -154,4 +156,27 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const statusSelect = document.getElementById('status');
+    const tanggalSelesaiInput = document.getElementById('tanggal_selesai');
+    
+    function toggleTanggalSelesai() {
+        const status = statusSelect.value;
+        if (status === 'selesai' || status === 'dibatalkan') {
+            tanggalSelesaiInput.removeAttribute('readonly');
+            if (!tanggalSelesaiInput.value) {
+                tanggalSelesaiInput.value = new Date().toISOString().split('T')[0];
+            }
+        } else {
+            tanggalSelesaiInput.setAttribute('readonly', true);
+            tanggalSelesaiInput.value = '';
+        }
+    }
+    
+    statusSelect.addEventListener('change', toggleTanggalSelesai);
+    toggleTanggalSelesai(); // Initial check
+});
+</script>
 @endsection

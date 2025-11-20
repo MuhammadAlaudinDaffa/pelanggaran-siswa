@@ -194,6 +194,16 @@
                                 <a href="{{ \App\Helpers\RouteHelper::route('kesiswaan.siswa_overview.show', Auth::id()) }}" class="btn btn-secondary">
                                     <i class="ti ti-arrow-left"></i> Kembali ke Data Siswa
                                 </a>
+                            @elseif(Auth::user()->level === 'orang_tua')
+                                @if(request('from') === 'siswa_overview' && request('siswa_id'))
+                                    <a href="{{ route('orang_tua.kesiswaan.siswa_overview.show', Auth::id()) }}" class="btn btn-secondary">
+                                        <i class="ti ti-arrow-left"></i> Kembali ke Overview Siswa
+                                    </a>
+                                @else
+                                    <a href="{{ route('orang_tua.kesiswaan.prestasi.index') }}" class="btn btn-secondary">
+                                        <i class="ti ti-arrow-left"></i> Kembali ke Data Prestasi
+                                    </a>
+                                @endif
                             @elseif(request('from') === 'siswa_overview' && request('siswa_id'))
                                 <a href="{{ \App\Helpers\RouteHelper::route('kesiswaan.siswa_overview.show', request('siswa_id')) }}" class="btn btn-secondary">
                                     <i class="ti ti-arrow-left"></i> Kembali ke Overview Siswa

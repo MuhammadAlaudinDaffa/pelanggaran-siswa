@@ -5,6 +5,7 @@
 @section('content')
 
     <!-- Card Laporan -->
+    @if(Auth::user()->level !== 'orang_tua')
     <div class="row mb-4">
         <div class="col-12">
             <div class="card bg-success text-white">
@@ -19,6 +20,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -39,12 +41,15 @@
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h5 class="card-title fw-semibold mb-0">
-                            @if(request('my_reports'))
+                            @if(Auth::user()->level === 'orang_tua')
+                                Data Prestasi Anak Anda
+                            @elseif(request('my_reports'))
                                 Data Catatan Prestasi yang Anda Buat
                             @else
                                 Data Prestasi
                             @endif
                         </h5>
+                        @if(Auth::user()->level !== 'orang_tua')
                         <div class="btn-group" role="group">
                             <a href="{{ \App\Helpers\RouteHelper::route('kesiswaan.prestasi.index') }}" 
                                class="btn btn-sm {{ !request('my_reports') ? 'btn-primary' : 'btn-outline-primary' }}">
@@ -55,6 +60,7 @@
                                 Catatan Saya
                             </a>
                         </div>
+                        @endif
                     </div>
 
                     <!-- Filter and Search Controls -->
@@ -189,9 +195,16 @@
                                                     <i class="ti ti-eye fs-4"></i>
                                                 </a>
                                                 @php
-                                                    $currentGuru = \App\Models\Guru::where('user_id', Auth::id())->first();
+                                                    $currentUser = Auth::user();
+                                                    $currentGuru = \App\Models\Guru::where('user_id', $currentUser->user_id)->first();
+                                                    $isCreator = false;
+                                                    if ($currentGuru && $currentGuru->guru_id == $item->guru_pencatat) {
+                                                        $isCreator = true;
+                                                    } elseif ($currentUser->user_id == $item->user_pencatat) {
+                                                        $isCreator = true;
+                                                    }
                                                     $canEdit = in_array($item->status_verifikasi, ['menunggu', 'revisi']) &&
-                                                        $currentGuru && $currentGuru->guru_id == $item->guru_pencatat;
+                                                        ($isCreator || in_array($currentUser->level, ['admin', 'kesiswaan']));
                                                 @endphp
                                                 @if($canEdit)
                                                     <a href="{{ \App\Helpers\RouteHelper::route('kesiswaan.prestasi.edit', $item->prestasi_id) }}"

@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('pelaksanaan_sanksi', function (Blueprint $table) {
             $table->id('pelaksanaan_id');
-            $table->foreignId('sanksi_id')->constrained('sanksi', 'sanksi_id')->cascadeOnDelete();
+            $table->foreignId('sanksi_id')->nullable()->constrained('sanksi', 'sanksi_id')->nullOnDelete();
             $table->date('tanggal_pelaksanaan');
             $table->text('deskripsi_pelaksanaan')->nullable();
             $table->string('bukti_pelaksanaan')->nullable();
             $table->enum('status', ['terjadwal','dikerjakan','tuntas','terlambat','perpanjangan'])->nullable();
             $table->text('catatan')->nullable();
-            $table->foreignId('guru_pengawas')->nullable()->constrained('guru', 'guru_id')->cascadeOnDelete();
+            $table->foreignId('guru_pengawas')->nullable()->constrained('guru', 'guru_id')->nullOnDelete();
             $table->dateTime('created_at')->useCurrent();
         });
     }

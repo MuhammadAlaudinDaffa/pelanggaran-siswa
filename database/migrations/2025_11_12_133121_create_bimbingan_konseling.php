@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('bimbingan_konseling', function (Blueprint $table) {
             $table->id('bk_id');
-            $table->foreignId('siswa_id')->constrained('siswa', 'siswa_id')->cascadeOnDelete();
-            $table->foreignId('guru_konselor')->nullable()->constrained('guru', 'guru_id')->cascadeOnDelete();
-            $table->foreignId('konselor_user_id')->nullable()->constrained('users', 'user_id')->cascadeOnDelete();
+            $table->foreignId('siswa_id')->nullable()->constrained('siswa', 'siswa_id')->nullOnDelete();
+            $table->foreignId('guru_konselor')->nullable()->constrained('guru', 'guru_id')->nullOnDelete();
+            $table->foreignId('konselor_user_id')->nullable()->constrained('users', 'user_id')->nullOnDelete();
             $table->string('konselor_tim')->nullable();
             $table->unsignedBigInteger('bk_parent_id')->nullable();
             $table->integer('child_count')->default(0);

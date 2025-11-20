@@ -8,12 +8,21 @@
                 <div class="col-12">
                     <div class="card bg-warning text-white">
                         <div class="card-body text-center py-4">
-                            <h4 class="card-title text-white mb-3">Manajemen Sanksi</h4>
-                            <p class="card-text mb-4">Tekan tombol dibawah ini untuk memilih data pelanggaran dengan cepat. Anda juga dapat melihat salah satu laporan pelanggaran yang berstatus diverifikasi, lalu buat sanksi melalui data pelanggaran tersebut.</p>
-                            <a href="{{ \App\Helpers\RouteHelper::route('kesiswaan.pelanggaran.index') }}"
-                                class="btn btn-light btn-lg">
-                                <i class="ti ti-exclamation-triangle me-2"></i> Pilih Laporan untuk Sanksi
-                            </a>
+                            @if(Auth::user()->level === 'kepala_sekolah')
+                                <h4 class="card-title text-white mb-3">Data Sanksi</h4>
+                                <p class="card-text mb-4">Hanya tim kesiswaan yang dapat membuat sanksi. Anda dapat melihat data pelanggaran yang telah diverifikasi melalui tombol di bawah ini.</p>
+                                <a href="{{ \App\Helpers\RouteHelper::route('kesiswaan.pelanggaran.index') }}"
+                                    class="btn btn-light btn-lg">
+                                    <i class="ti ti-eye me-2"></i> Lihat Data Pelanggaran
+                                </a>
+                            @else
+                                <h4 class="card-title text-white mb-3">Manajemen Sanksi</h4>
+                                <p class="card-text mb-4">Tekan tombol dibawah ini untuk memilih data pelanggaran dengan cepat. Anda juga dapat melihat salah satu laporan pelanggaran yang berstatus diverifikasi, lalu buat sanksi melalui data pelanggaran tersebut.</p>
+                                <a href="{{ \App\Helpers\RouteHelper::route('kesiswaan.pelanggaran.index') }}"
+                                    class="btn btn-light btn-lg">
+                                    <i class="ti ti-exclamation-triangle me-2"></i> Pilih Laporan untuk Sanksi
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>

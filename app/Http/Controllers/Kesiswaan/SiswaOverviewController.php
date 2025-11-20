@@ -12,17 +12,12 @@ class SiswaOverviewController extends Controller
 {
     public function index(Request $request)
     {
-        // Guru access control - only show students from their class
-        if (auth()->user()->level === 'guru') {
-            $guru = \App\Models\Guru::where('user_id', auth()->id())->first();
-            if (!$guru) {
-                return view('kesiswaan.siswa_overview.index', ['noGuruData' => true]);
-            }
-            
+        // Check if user exists in guru table
+        $guru = \App\Models\Guru::where('user_id', auth()->id())->first();
+        $kelas = null;
+        
+        if ($guru) {
             $kelas = \App\Models\Kelas::where('wali_kelas_id', $guru->guru_id)->first();
-            if (!$kelas) {
-                return view('kesiswaan.siswa_overview.index', ['siswa' => collect(), 'isGuru' => true]);
-            }
         }
         
         $query = Siswa::with(['kelas.jurusan'])
@@ -45,11 +40,17 @@ class SiswaOverviewController extends Controller
                 }
             ], 'poin');
 
-        // Filter for guru - only their class students
-        if (auth()->user()->level === 'guru' && isset($kelas)) {
+        // Filter logic
+        if ($guru && $kelas && auth()->user()->level === 'guru') {
+            // Guru level: always filter to their class
             $query->where('kelas_id', $kelas->kelas_id);
-            
-            // Calculate class statistics for guru
+        } elseif ($guru && $kelas && in_array(auth()->user()->level, ['admin', 'kesiswaan', 'kepala_sekolah']) && $request->has('kelas_filter')) {
+            // Admin/Kesiswaan with guru role: filter by class if requested
+            $query->where('kelas_id', $kelas->kelas_id);
+        }
+        
+        // Calculate class statistics if user is in guru table and is wali kelas (always show for admin/kesiswaan)
+        if ($guru && $kelas) {
             $classStats = [
                 'total_siswa' => \App\Models\Siswa::where('kelas_id', $kelas->kelas_id)->count(),
                 'siswa_melanggar' => \App\Models\Siswa::where('kelas_id', $kelas->kelas_id)
@@ -115,6 +116,32 @@ class SiswaOverviewController extends Controller
 
         $prestasi = Prestasi::with(['jenisPrestasi.kategoriPrestasi', 'guruPencatat', 'guruVerifikator.user'])
             ->where('siswa_id', $id)
+            ->where('status_verifikasi', 'diverifikasi')
+            ->orderBy('tanggal', 'desc')
+            ->get();
+
+        return view('kesiswaan.siswa_overview.show', compact('siswa', 'pelanggaran', 'prestasi'));
+    }
+    
+    public function showForOrangTua($id)
+    {
+        // Get orang tua data
+        $orangTua = \App\Models\Orangtua::where('user_id', auth()->id())->first();
+        if (!$orangTua) {
+            return redirect()->to(\App\Helpers\RouteHelper::route('orang_tua.index'));
+        }
+        
+        // Only allow access to their child's data
+        $siswa = Siswa::with(['kelas.jurusan'])->findOrFail($orangTua->siswa_id);
+        
+        $pelanggaran = Pelanggaran::with(['jenisPelanggaran.kategoriPelanggaran', 'guruPencatat', 'guruVerifikator.user'])
+            ->where('siswa_id', $siswa->siswa_id)
+            ->where('status_verifikasi', 'diverifikasi')
+            ->orderBy('tanggal', 'desc')
+            ->get();
+
+        $prestasi = Prestasi::with(['jenisPrestasi.kategoriPrestasi', 'guruPencatat', 'guruVerifikator.user'])
+            ->where('siswa_id', $siswa->siswa_id)
             ->where('status_verifikasi', 'diverifikasi')
             ->orderBy('tanggal', 'desc')
             ->get();

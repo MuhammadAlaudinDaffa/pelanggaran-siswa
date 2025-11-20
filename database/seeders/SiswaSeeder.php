@@ -17,7 +17,7 @@ class SiswaSeeder extends Seeder
             'nama_siswa' => 'Alaudin',
             'tempat_lahir' => 'Jakarta',
             'tanggal_lahir' => '2006-01-15',
-            'jenis_kelamin' => 'Laki-laki',
+            'jenis_kelamin' => 'laki-laki',
             'alamat' => 'Jl. Contoh No. 123',
             'no_telp' => '081234567890',
             'kelas_id' => 1,

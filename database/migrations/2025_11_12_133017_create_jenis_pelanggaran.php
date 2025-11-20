@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('jenis_pelanggaran_id');
             $table->string('nama_pelanggaran');
             $table->integer('poin');
-            $table->foreignid('kategori_pelanggaran_id')->constrained('kategori_pelanggaran', 'kategori_pelanggaran_id')->cascadeOnDelete();
+            $table->foreignid('kategori_pelanggaran_id')->nullable()->constrained('kategori_pelanggaran', 'kategori_pelanggaran_id')->nullOnDelete();
             $table->text('deskripsi')->nullable();
             $table->string('sanksi_rekomendasi')->nullable();
             $table->dateTime('created_at')->useCurrent();

@@ -61,12 +61,12 @@
                                 <tr>
                                     <td class="fw-semibold">Jenis Kelamin:</td>
                                     <td>
-                                        @if($siswa->jenis_kelamin)
-                                            <span class="badge {{ $siswa->jenis_kelamin == 'laki-laki' ? 'bg-info' : 'bg-warning' }}">
-                                                {{ ucfirst($siswa->jenis_kelamin) }}
-                                            </span>
+                                        @if($siswa->jenis_kelamin == 'laki-laki')
+                                            <span class="badge bg-info">Laki-laki</span>
+                                        @elseif($siswa->jenis_kelamin == 'perempuan')
+                                            <span class="badge bg-pink">Perempuan</span>
                                         @else
-                                            -
+                                            <span class="badge bg-secondary">-</span>
                                         @endif
                                     </td>
                                 </tr>

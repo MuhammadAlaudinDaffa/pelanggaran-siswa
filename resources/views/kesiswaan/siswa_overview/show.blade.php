@@ -10,12 +10,20 @@
                     <h5 class="card-title fw-semibold mb-4">Detail Overview Siswa</h5>
 
                     <!-- Student Photo -->
-                    @if($siswa->foto)
-                        <div class="text-center mb-4">
+                    <div class="text-center mb-4">
+                        @if($siswa->foto)
                             <img src="{{ asset('storage/siswa/' . $siswa->foto) }}" alt="Foto {{ $siswa->nama_siswa }}"
                                  class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover; border: 4px solid #e9ecef;">
-                        </div>
-                    @endif
+                        @else
+                            <div class="bg-light d-flex align-items-center justify-content-center mx-auto rounded-circle" 
+                                 style="width: 150px; height: 150px; border: 4px solid #e9ecef;">
+                                <div class="text-center">
+                                    <i class="ti ti-user text-muted" style="font-size: 36px;"></i>
+                                    <p class="text-muted mt-1 mb-0 small">Tidak ada foto</p>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
 
                     <!-- Student Info -->
                     <div class="row mb-4">
@@ -172,10 +180,17 @@
                                                         </td>
                                                     @endif
                                                     <td class="border-bottom-0">
-                                                        <a href="{{ \App\Helpers\RouteHelper::route('kesiswaan.pelanggaran.show', $p->pelanggaran_id) }}?from=siswa_overview&siswa_id={{ $siswa->siswa_id }}"
-                                                            class="btn btn-outline-primary btn-sm">
-                                                            <i class="ti ti-eye fs-4"></i>
-                                                        </a>
+                                                        @if(Auth::user()->level === 'orang_tua')
+                                                            <a href="{{ route('orang_tua.kesiswaan.pelanggaran.show', $p->pelanggaran_id) }}?from=siswa_overview&siswa_id={{ $siswa->siswa_id }}"
+                                                                class="btn btn-outline-primary btn-sm">
+                                                                <i class="ti ti-eye fs-4"></i>
+                                                            </a>
+                                                        @else
+                                                            <a href="{{ \App\Helpers\RouteHelper::route('kesiswaan.pelanggaran.show', $p->pelanggaran_id) }}?from=siswa_overview&siswa_id={{ $siswa->siswa_id }}"
+                                                                class="btn btn-outline-primary btn-sm">
+                                                                <i class="ti ti-eye fs-4"></i>
+                                                            </a>
+                                                        @endif
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -239,10 +254,17 @@
                                                         @endif
                                                     </td>
                                                     <td class="border-bottom-0">
-                                                        <a href="{{ \App\Helpers\RouteHelper::route('kesiswaan.prestasi.show', $pr->prestasi_id) }}?from=siswa_overview&siswa_id={{ $siswa->siswa_id }}"
-                                                            class="btn btn-outline-primary btn-sm">
-                                                            <i class="ti ti-eye fs-4"></i>
-                                                        </a>
+                                                        @if(Auth::user()->level === 'orang_tua')
+                                                            <a href="{{ route('orang_tua.kesiswaan.prestasi.show', $pr->prestasi_id) }}?from=siswa_overview&siswa_id={{ $siswa->siswa_id }}"
+                                                                class="btn btn-outline-primary btn-sm">
+                                                                <i class="ti ti-eye fs-4"></i>
+                                                            </a>
+                                                        @else
+                                                            <a href="{{ \App\Helpers\RouteHelper::route('kesiswaan.prestasi.show', $pr->prestasi_id) }}?from=siswa_overview&siswa_id={{ $siswa->siswa_id }}"
+                                                                class="btn btn-outline-primary btn-sm">
+                                                                <i class="ti ti-eye fs-4"></i>
+                                                            </a>
+                                                        @endif
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -261,6 +283,10 @@
                     <div class="mt-4">
                         @if(Auth::user()->level === 'siswa')
                             <a href="{{ route('siswa.index') }}" class="btn btn-secondary">
+                                <i class="ti ti-arrow-left"></i> Kembali ke Dashboard
+                            </a>
+                        @elseif(Auth::user()->level === 'orang_tua')
+                            <a href="{{ route('orang_tua.index') }}" class="btn btn-secondary">
                                 <i class="ti ti-arrow-left"></i> Kembali ke Dashboard
                             </a>
                         @else

@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('orangtua', function (Blueprint $table) {
             $table->id('orangtua_id');
-            $table->foreignId('user_id')->constrained('users', 'user_id')->cascadeOnDelete();
-            $table->foreignId('siswa_id')->constrained('siswa', 'siswa_id')->cascadeOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained('users', 'user_id')->nullOnDelete();
+            $table->foreignId('siswa_id')->nullable()->constrained('siswa', 'siswa_id')->nullOnDelete();
             $table->enum('hubungan', ['ayah', 'ibu', 'wali']);
             $table->string('nama_orangtua');
             $table->string('pekerjaan')->nullable();

@@ -64,8 +64,8 @@ Route::middleware('admin')->name('admin.')->group(function () {
     Route::resource('admin/data-master/siswa', AdminSiswa::class)->names('data-master.siswa');
     Route::resource('admin/data-master/tahun-ajaran', AdminTahunAjaran::class)->names('data-master.tahun-ajaran');
     Route::resource('admin/data-master/guru-management', AdminGuru::class)->names('data-master.guru-management');
-    Route::get('admin/data-master/orang-tua', [AdminOrangTua::class, 'index'])->name('admin.data-master.orang-tua.index');
-    Route::get('admin/data-master/orang-tua/{id}', [AdminOrangTua::class, 'show'])->name('admin.data-master.orang-tua.show');
+    Route::get('admin/data-master/orang-tua', [AdminOrangTua::class, 'index'])->name('data-master.orang-tua.index');
+    Route::get('admin/data-master/orang-tua/{id}', [AdminOrangTua::class, 'show'])->name('data-master.orang-tua.show');
 
     Route::resource('admin/kesiswaan/pelanggaran', KesiswaanPelanggaran::class)->names('kesiswaan.pelanggaran');
     Route::post('admin/kesiswaan/pelanggaran/{pelanggaran}/verifikasi', [KesiswaanPelanggaran::class, 'verifikasi'])->name('kesiswaan.pelanggaran.verifikasi');
@@ -128,12 +128,16 @@ Route::middleware('guru')->name('guru.')->group(function () {
     Route::get('guru/guru/info-kelas', [\App\Http\Controllers\Guru\InfoKelasController::class, 'index'])->name('guru.info_kelas.index');
     Route::post('guru/guru/info-kelas', [\App\Http\Controllers\Guru\InfoKelasController::class, 'store'])->name('guru.info_kelas.store');
     Route::resource('guru/kesiswaan/siswa-overview', \App\Http\Controllers\Kesiswaan\SiswaOverviewController::class)->names('kesiswaan.siswa_overview')->only(['index', 'show']);
-    Route::resource('guru/kesiswaan/pelanggaran', KesiswaanPelanggaran::class)->names('kesiswaan.pelanggaran')->only(['index', 'show']);
+    Route::resource('guru/kesiswaan/pelanggaran', KesiswaanPelanggaran::class)->names('kesiswaan.pelanggaran');
     Route::resource('guru/kesiswaan/prestasi', KesiswaanPrestasi::class)->names('kesiswaan.prestasi')->only(['index', 'show']);
 });
 
 // Orang Tua
 Route::middleware('orang_tua')->name('orang_tua.')->group(function () {
+    Route::resource('orang-tua/bimbingan-konseling/bk', BimbinganKonselingBK::class)->names('bimbingan_konseling.bk')->only(['index', 'show']);
+    Route::get('orang-tua/kesiswaan/siswa-overview/{user}', [\App\Http\Controllers\Kesiswaan\SiswaOverviewController::class, 'showForOrangTua'])->name('kesiswaan.siswa_overview.show');
+    Route::resource('orang-tua/kesiswaan/pelanggaran', KesiswaanPelanggaran::class)->names('kesiswaan.pelanggaran')->only(['index', 'show']);
+    Route::resource('orang-tua/kesiswaan/prestasi', KesiswaanPrestasi::class)->names('kesiswaan.prestasi')->only(['index', 'show']);
 });
 
 // Siswa

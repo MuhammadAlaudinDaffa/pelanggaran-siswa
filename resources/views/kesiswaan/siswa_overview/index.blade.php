@@ -16,8 +16,8 @@
         </div>
     @endif
 
-    @if(isset($classStats) && Auth::user()->level === 'guru')
-        <!-- Class Statistics for Guru -->
+    @if(isset($classStats) && \App\Models\Guru::where('user_id', Auth::id())->exists())
+        <!-- Class Statistics -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card">
@@ -65,18 +65,37 @@
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h5 class="card-title fw-semibold mb-0">Overview Siswa</h5>
+                        @php
+                            $guru = \App\Models\Guru::where('user_id', Auth::id())->first();
+                            $kelas = $guru ? \App\Models\Kelas::where('wali_kelas_id', $guru->guru_id)->first() : null;
+                        @endphp
+                        @if($guru && $kelas && in_array(Auth::user()->level, ['admin', 'kesiswaan', 'kepala_sekolah']))
+                            <div class="btn-group" role="group">
+                                <a href="{{ \App\Helpers\RouteHelper::route('kesiswaan.siswa_overview.index') }}" 
+                                   class="btn btn-sm {{ !request('kelas_filter') ? 'btn-primary' : 'btn-outline-primary' }}">
+                                    Semua Siswa
+                                </a>
+                                <a href="{{ request()->fullUrlWithQuery(['kelas_filter' => '1']) }}" 
+                                   class="btn btn-sm {{ request('kelas_filter') ? 'btn-primary' : 'btn-outline-primary' }}">
+                                    Kelas {{ $kelas->nama_kelas }}
+                                </a>
+                            </div>
+                        @endif
                     </div>
 
                     <!-- Search Filter -->
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <form method="GET" class="d-flex gap-2">
+                                @if(request('kelas_filter'))
+                                    <input type="hidden" name="kelas_filter" value="1">
+                                @endif
                                 <input type="text" name="search" class="form-control" 
                                        placeholder="Cari nama siswa atau NIS..." 
                                        value="{{ request('search') }}">
                                 <button type="submit" class="btn btn-outline-primary">Cari</button>
                                 @if(request('search'))
-                                    <a href="{{ \App\Helpers\RouteHelper::route('kesiswaan.siswa_overview.index') }}" 
+                                    <a href="{{ \App\Helpers\RouteHelper::route('kesiswaan.siswa_overview.index') }}{{ request('kelas_filter') ? '?kelas_filter=1' : '' }}" 
                                        class="btn btn-outline-secondary">Reset</a>
                                 @endif
                             </form>

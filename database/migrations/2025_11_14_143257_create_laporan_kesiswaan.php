@@ -16,10 +16,10 @@ return new class extends Migration
             $table->enum('jenis_data', ['pelanggaran','prestasi']);
             $table->string('tabel_terkait');
             $table->bigInteger('id_data_terkait');
-            $table->foreignId('siswa_id')->constrained('siswa', 'siswa_id')->cascadeOnDelete();
+            $table->foreignId('siswa_id')->nullable()->constrained('siswa', 'siswa_id')->nullOnDelete();
             $table->string('tabel_jenis');
             $table->integer('id_data_jenis');
-            $table->foreignId('tahun_ajaran_id')->constrained('tahun_ajaran', 'tahun_ajaran_id')->cascadeOnDelete();
+            $table->foreignId('tahun_ajaran_id')->nullable()->constrained('tahun_ajaran', 'tahun_ajaran_id')->nullOnDelete();
             $table->integer('poin');
             $table->text('keterangan');
             $table->enum('jenis_bukti', ['foto','dokumen'])->nullable();

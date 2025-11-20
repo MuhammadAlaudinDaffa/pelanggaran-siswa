@@ -14,26 +14,27 @@ class KesiswaanPrestasi extends Controller
     {
         $user = Auth::user();
         
-        // Block student access to index
+        // Block student and orang tua access to index - redirect to their specific views
         if ($user->level === 'siswa') {
             return redirect()->to(\App\Helpers\RouteHelper::route('kesiswaan.siswa_overview.show', $user->user_id));
         }
         
-        // Guru access control - only show students from their class
-        if ($user->level === 'guru') {
-            $guru = \App\Models\Guru::where('user_id', $user->user_id)->first();
-            if (!$guru) {
-                return view('kesiswaan.prestasi.index', ['noGuruData' => true]);
+        if ($user->level === 'orang_tua') {
+            $orangTua = \App\Models\Orangtua::where('user_id', $user->user_id)->first();
+            if (!$orangTua) {
+                return redirect()->to(\App\Helpers\RouteHelper::route('orang_tua.index'));
             }
             
-            $kelas = \App\Models\Kelas::where('wali_kelas', $guru->guru_id)->first();
-            if ($kelas) {
-                $query->whereHas('siswa', function($q) use ($kelas) {
-                    $q->where('kelas_id', $kelas->kelas_id);
-                });
-            } else {
-                $query->where('siswa_id', 0); // No results if not wali kelas
-            }
+            $query = Prestasi::with([
+                'siswa.kelas.jurusan',
+                'guruPencatat',
+                'guruVerifikator',
+                'jenisPrestasi.kategoriPrestasi',
+                'tahunAjaran'
+            ])->where('siswa_id', $orangTua->siswa_id)->where('status_verifikasi', 'diverifikasi');
+            
+            $prestasi = $query->paginate(10);
+            return view('kesiswaan.prestasi.index', compact('prestasi'));
         }
         
         $query = Prestasi::with([
@@ -43,7 +44,7 @@ class KesiswaanPrestasi extends Controller
             'jenisPrestasi.kategoriPrestasi',
             'tahunAjaran'
         ]);
-
+        
         // Filter untuk guru berdasarkan user_id di tabel guru
         // Admin dan kesiswaan dapat melihat semua data atau filter laporan mereka sendiri
         if (!in_array($user->level, ['admin', 'kesiswaan'])) {
@@ -57,6 +58,8 @@ class KesiswaanPrestasi extends Controller
             $guru = \App\Models\Guru::where('user_id', $user->user_id)->first();
             if ($guru) {
                 $query->where('guru_pencatat', $guru->guru_id);
+            } else {
+                $query->where('user_pencatat', $user->user_id);
             }
         }
 
@@ -130,6 +133,12 @@ class KesiswaanPrestasi extends Controller
             if (!$siswa || $prestasi->siswa_id != $siswa->siswa_id) {
                 return redirect()->to(\App\Helpers\RouteHelper::route('kesiswaan.siswa_overview.show', Auth::id()));
             }
+        } elseif (Auth::user()->level === 'orang_tua') {
+            // Orang tua access control - only their child's data
+            $orangTua = \App\Models\Orangtua::where('user_id', Auth::id())->first();
+            if (!$orangTua || $prestasi->siswa_id != $orangTua->siswa_id) {
+                return redirect()->to(\App\Helpers\RouteHelper::route('orang_tua.index'));
+            }
         } elseif (Auth::user()->level === 'guru') {
             // Guru can only access prestasi from their class students
             $guru = \App\Models\Guru::where('user_id', Auth::id())->first();
@@ -176,9 +185,12 @@ class KesiswaanPrestasi extends Controller
             'bukti_dokumen' => 'nullable|file|max:2048'
         ]);
 
-        $guru = \App\Models\Guru::where('user_id', Auth::id())->first();
-        if (!$guru) {
-            return redirect()->back()->with('error', 'Hanya guru yang dapat membuat prestasi');
+        $user = Auth::user();
+        $guru = \App\Models\Guru::where('user_id', $user->user_id)->first();
+        
+        // Allow admin/kesiswaan to create even if not in guru table
+        if (!$guru && !in_array($user->level, ['admin', 'kesiswaan'])) {
+            return redirect()->back()->with('error', 'Hanya guru, admin, atau kesiswaan yang dapat membuat prestasi');
         }
         
         $tahunAjaran = \App\Models\TahunAjaran::where('status_aktif', 1)
@@ -193,7 +205,8 @@ class KesiswaanPrestasi extends Controller
             'tingkat' => $request->tingkat,
             'penghargaan' => $request->penghargaan,
             'tanggal' => date('Y-m-d'),
-            'guru_pencatat' => $guru->guru_id,
+            'guru_pencatat' => $guru ? $guru->guru_id : null,
+            'user_pencatat' => $user->user_id,
             'tahun_ajaran_id' => $tahunAjaran ? $tahunAjaran->tahun_ajaran_id : null,
             'poin' => $jenisPrestasi->poin,
             'status_verifikasi' => 'menunggu'
@@ -216,8 +229,17 @@ class KesiswaanPrestasi extends Controller
         
         // Check if current user is the creator (unless admin/kesiswaan)
         if (!in_array(Auth::user()->level, ['admin', 'kesiswaan'])) {
-            $currentGuru = \App\Models\Guru::where('user_id', Auth::id())->first();
-            if (!$currentGuru || $currentGuru->guru_id != $prestasi->guru_pencatat) {
+            $currentUser = Auth::user();
+            $currentGuru = \App\Models\Guru::where('user_id', $currentUser->user_id)->first();
+            
+            $isCreator = false;
+            if ($currentGuru && $currentGuru->guru_id == $prestasi->guru_pencatat) {
+                $isCreator = true;
+            } elseif ($currentUser->user_id == $prestasi->user_pencatat) {
+                $isCreator = true;
+            }
+            
+            if (!$isCreator) {
                 return redirect()->to(\App\Helpers\RouteHelper::route('kesiswaan.prestasi.index'))->with('error', 'Anda hanya dapat mengedit prestasi yang Anda buat sendiri');
             }
         }
@@ -236,8 +258,17 @@ class KesiswaanPrestasi extends Controller
         
         // Check if current user is the creator (unless admin/kesiswaan)
         if (!in_array(Auth::user()->level, ['admin', 'kesiswaan'])) {
-            $currentGuru = \App\Models\Guru::where('user_id', Auth::id())->first();
-            if (!$currentGuru || $currentGuru->guru_id != $prestasi->guru_pencatat) {
+            $currentUser = Auth::user();
+            $currentGuru = \App\Models\Guru::where('user_id', $currentUser->user_id)->first();
+            
+            $isCreator = false;
+            if ($currentGuru && $currentGuru->guru_id == $prestasi->guru_pencatat) {
+                $isCreator = true;
+            } elseif ($currentUser->user_id == $prestasi->user_pencatat) {
+                $isCreator = true;
+            }
+            
+            if (!$isCreator) {
                 return redirect()->to(\App\Helpers\RouteHelper::route('kesiswaan.prestasi.index'))->with('error', 'Anda hanya dapat mengedit prestasi yang Anda buat sendiri');
             }
         }

@@ -128,7 +128,16 @@
                                     class="btn btn-info">
                                     <i class="ti ti-file-text"></i> Lihat Pelanggaran
                                 </a>
-                                @if(Auth::user()->level !== 'kepala_sekolah')
+                                @php
+                                    $canEdit = in_array(Auth::user()->level, ['admin', 'kesiswaan']);
+                                    
+                                    // If status is selesai or dibatalkan, check if within 3 days
+                                    if (in_array($sanksi->status, ['selesai', 'dibatalkan']) && $sanksi->tanggal_selesai) {
+                                        $daysSinceCompleted = \Carbon\Carbon::parse($sanksi->tanggal_selesai)->diffInDays(now());
+                                        $canEdit = $canEdit && $daysSinceCompleted <= 3;
+                                    }
+                                @endphp
+                                @if($canEdit)
                                     <a href="{{ \App\Helpers\RouteHelper::route('kesiswaan.sanksi.edit', $sanksi->sanksi_id) }}" class="btn btn-warning">
                                         <i class="ti ti-pencil"></i> Edit
                                     </a>

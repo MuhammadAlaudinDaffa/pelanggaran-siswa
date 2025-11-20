@@ -30,6 +30,13 @@ class BimbinganKonselingBK extends Controller
             } else {
                 $query->where('siswa_id', 0);
             }
+        } elseif ($user->level === 'orang_tua') {
+            $orangTua = \App\Models\Orangtua::where('user_id', $user->user_id)->first();
+            if ($orangTua) {
+                $query->where('siswa_id', $orangTua->siswa_id);
+            } else {
+                $query->where('siswa_id', 0);
+            }
         } elseif (in_array($user->level, ['admin', 'bimbingan_konseling'])) {
             $guru = \App\Models\Guru::where('user_id', $user->user_id)->first();
             $query->where(function($q) use ($guru, $user) {
@@ -126,6 +133,11 @@ class BimbinganKonselingBK extends Controller
             $siswa = Siswa::where('user_id', Auth::id())->first();
             if (!$siswa || $bimbinganKonseling->siswa_id != $siswa->siswa_id) {
                 return redirect()->to(\App\Helpers\RouteHelper::route('bimbingan_konseling.bk.index'));
+            }
+        } elseif (Auth::user()->level === 'orang_tua') {
+            $orangTua = \App\Models\Orangtua::where('user_id', Auth::id())->first();
+            if (!$orangTua || $bimbinganKonseling->siswa_id != $orangTua->siswa_id) {
+                return redirect()->to(\App\Helpers\RouteHelper::route('orang_tua.bimbingan_konseling.bk.index'));
             }
         } elseif (in_array(Auth::user()->level, ['admin', 'bimbingan_konseling'])) {
             $guru = \App\Models\Guru::where('user_id', Auth::id())->first();

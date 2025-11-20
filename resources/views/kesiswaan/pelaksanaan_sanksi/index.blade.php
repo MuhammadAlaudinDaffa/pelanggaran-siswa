@@ -9,7 +9,12 @@
             <div class="card bg-success text-white">
                 <div class="card-body text-center py-4">
                     <h4 class="card-title text-white mb-3">Data Pelaksanaan Sanksi</h4>
-                    @if (in_array(Auth::user()->level, ['admin', 'kesiswaan']))
+                    @if(Auth::user()->level === 'kepala_sekolah')
+                        <p class="card-text mb-4">Hanya tim kesiswaan yang dapat membuat pelaksanaan sanksi. Anda dapat melihat data sanksi melalui tombol di bawah ini.</p>
+                        <a href="{{ \App\Helpers\RouteHelper::route('kesiswaan.sanksi.index') }}" class="btn btn-light btn-lg">
+                            <i class="ti ti-eye me-2"></i> Lihat Data Sanksi
+                        </a>
+                    @elseif (in_array(Auth::user()->level, ['admin', 'kesiswaan']))
                         <p class="card-text mb-4">Buka halaman detail sanksi untuk membuat atau mengedit pelaksanaan sanksi</p>
                         <a href="{{ \App\Helpers\RouteHelper::route('kesiswaan.sanksi.index') }}" class="btn btn-light btn-lg">
                             <i class="ti ti-gavel me-2"></i> Lihat Data Sanksi

@@ -65,7 +65,12 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="nis" class="form-label">NIS</label>
-                                        <input type="text" class="form-control @error('nis') is-invalid @enderror" id="nis" name="nis" value="{{ old('nis') }}">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control @error('nis') is-invalid @enderror" id="nis" name="nis" value="{{ old('nis') }}" placeholder="{{ $nextNis ?? '' }}">
+                                            <button type="button" class="btn btn-outline-primary" onclick="setNisFromPlaceholder()" title="Gunakan NIS otomatis">
+                                                <i class="ti ti-wand"></i>
+                                            </button>
+                                        </div>
                                         @error('nis')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -210,5 +215,13 @@
                 toggleFields();
             }
         });
+        
+        function setNisFromPlaceholder() {
+            const nisInput = document.getElementById('nis');
+            const placeholder = nisInput.getAttribute('placeholder');
+            if (placeholder) {
+                nisInput.value = placeholder;
+            }
+        }
     </script>
 @endsection

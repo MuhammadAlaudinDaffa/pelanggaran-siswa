@@ -13,6 +13,7 @@ class Prestasi extends Model
     protected $fillable = [
         'siswa_id',
         'guru_pencatat',
+        'user_pencatat',
         'jenis_prestasi_id',
         'tahun_ajaran_id',
         'poin',
@@ -40,6 +41,11 @@ class Prestasi extends Model
     public function guruPencatat()
     {
         return $this->belongsTo(Guru::class, 'guru_pencatat');
+    }
+
+    public function userPencatat()
+    {
+        return $this->belongsTo(User::class, 'user_pencatat');
     }
 
     public function guruVerifikator()

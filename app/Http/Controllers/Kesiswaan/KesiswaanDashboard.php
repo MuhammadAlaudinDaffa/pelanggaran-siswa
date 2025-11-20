@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Kesiswaan;
 use App\Http\Controllers\Controller;
 use App\Models\Pelanggaran;
 use App\Models\Prestasi;
+use App\Models\Sanksi;
+use App\Models\PelaksanaanSanksi;
 
 class KesiswaanDashboard extends Controller
 {
@@ -24,9 +26,21 @@ class KesiswaanDashboard extends Controller
         $prestasiRevisi = Prestasi::where('status_verifikasi', 'revisi')->count();
         $prestasiDitolak = Prestasi::where('status_verifikasi', 'ditolak')->count();
 
+        // Sanksi statistics
+        $totalSanksi = Sanksi::count();
+        $sanksiAktif = Sanksi::where('status', 'aktif')->count();
+        $sanksiSelesai = Sanksi::where('status', 'selesai')->count();
+
+        // Pelaksanaan Sanksi statistics
+        $totalPelaksanaanSanksi = PelaksanaanSanksi::count();
+        $pelaksanaanMenunggu = PelaksanaanSanksi::where('status', 'menunggu')->count();
+        $pelaksanaanTuntas = PelaksanaanSanksi::where('status', 'tuntas')->count();
+
         return view('kesiswaan.index', compact(
             'totalPelanggaran', 'pelanggaranMenunggu', 'pelanggaranDiverifikasi', 'pelanggaranRevisi', 'pelanggaranDitolak',
-            'totalPrestasi', 'prestasiMenunggu', 'prestasiDiverifikasi', 'prestasiRevisi', 'prestasiDitolak'
+            'totalPrestasi', 'prestasiMenunggu', 'prestasiDiverifikasi', 'prestasiRevisi', 'prestasiDitolak',
+            'totalSanksi', 'sanksiAktif', 'sanksiSelesai',
+            'totalPelaksanaanSanksi', 'pelaksanaanMenunggu', 'pelaksanaanTuntas'
         ));
     }
 }

@@ -4,12 +4,57 @@
     @if(isset($error))
         <div class="alert alert-danger">{{ $error }}</div>
     @else
+        <!-- Student Profile Card -->
         <div class="row">
             <div class="col-12">
-                <div class="card">
+                <div class="card bg-primary text-white">
                     <div class="card-body">
-                        <h4 class="card-title">Selamat Datang, {{ $siswa->nama_siswa }}</h4>
-                        <p class="card-text">Kelas: <span class="badge bg-primary">{{ $siswa->kelas->nama_kelas }}</span></p>
+                        <div class="row align-items-center">
+                            <div class="col-md-3 text-center">
+                                @if($siswa->foto)
+                                    <img src="{{ asset('storage/' . $siswa->foto) }}" alt="Foto {{ $siswa->nama_siswa }}" 
+                                         class="rounded-circle border border-white" style="width: 120px; height: 120px; object-fit: cover;">
+                                @else
+                                    <div class="rounded-circle bg-white d-flex align-items-center justify-content-center mx-auto" 
+                                         style="width: 120px; height: 120px;">
+                                        <i class="ti ti-user text-primary" style="font-size: 48px;"></i>
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="col-md-9">
+                                <h3 class="text-white mb-2">{{ $siswa->nama_siswa }}</h3>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p class="mb-1"><strong>NIS:</strong> {{ $siswa->nis }}</p>
+                                        @if($siswa->nisn)
+                                            <p class="mb-1"><strong>NISN:</strong> {{ $siswa->nisn }}</p>
+                                        @endif
+                                        <p class="mb-1"><strong>Kelas:</strong> 
+                                            <span class="badge bg-light text-primary">{{ $siswa->kelas->nama_kelas ?? '-' }}</span>
+                                        </p>
+                                        @if($siswa->kelas && $siswa->kelas->jurusan)
+                                            <p class="mb-1"><strong>Jurusan:</strong> {{ $siswa->kelas->jurusan->nama_jurusan }}</p>
+                                        @endif
+                                    </div>
+                                    <div class="col-md-6">
+                                        @if($siswa->jenis_kelamin)
+                                            <p class="mb-1"><strong>Jenis Kelamin:</strong> {{ ucfirst($siswa->jenis_kelamin) }}</p>
+                                        @endif
+                                        @if($siswa->tempat_lahir && $siswa->tanggal_lahir)
+                                            <p class="mb-1"><strong>TTL:</strong> {{ $siswa->tempat_lahir }}, {{ date('d F Y', strtotime($siswa->tanggal_lahir)) }}</p>
+                                        @elseif($siswa->tanggal_lahir)
+                                            <p class="mb-1"><strong>Tanggal Lahir:</strong> {{ date('d F Y', strtotime($siswa->tanggal_lahir)) }}</p>
+                                        @endif
+                                        @if($siswa->no_telp)
+                                            <p class="mb-1"><strong>No. Telepon:</strong> {{ $siswa->no_telp }}</p>
+                                        @endif
+                                        @if($siswa->alamat)
+                                            <p class="mb-1"><strong>Alamat:</strong> {{ $siswa->alamat }}</p>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

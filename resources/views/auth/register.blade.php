@@ -56,9 +56,9 @@
 						<label for="hubungan" class="form-label">Hubungan</label>
 						<select class="form-select @error('hubungan') is-invalid @enderror" id="hubungan" name="hubungan" required>
 							<option value="">Pilih Hubungan</option>
-							<option value="Ayah" {{ old('hubungan') == 'Ayah' ? 'selected' : '' }}>Ayah</option>
-							<option value="Ibu" {{ old('hubungan') == 'Ibu' ? 'selected' : '' }}>Ibu</option>
-							<option value="Wali" {{ old('hubungan') == 'Wali' ? 'selected' : '' }}>Wali</option>
+							<option value="ayah" {{ old('hubungan') == 'ayah' ? 'selected' : '' }}>Ayah</option>
+							<option value="ibu" {{ old('hubungan') == 'ibu' ? 'selected' : '' }}>Ibu</option>
+							<option value="wali" {{ old('hubungan') == 'wali' ? 'selected' : '' }}>Wali</option>
 						</select>
 						@error('hubungan')
 							<div class="invalid-feedback">{{ $message }}</div>

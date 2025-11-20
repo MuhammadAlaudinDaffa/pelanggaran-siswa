@@ -51,7 +51,7 @@
         @elseif(Auth::user()->level === 'siswa')
             @include('siswa.partials.sidebar')
         @elseif(Auth::user()->level === 'orang_tua')
-            @include('orangtua.partials.sidebar')
+            @include('orang_tua.partials.sidebar')
         @endif
         <!--  Sidebar End -->
 

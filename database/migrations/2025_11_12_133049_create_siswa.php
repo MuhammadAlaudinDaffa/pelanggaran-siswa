@@ -13,16 +13,16 @@ return new class extends Migration
     {
         Schema::create('siswa', function (Blueprint $table) {
             $table->id('siswa_id');
-            $table->foreignId('user_id')->constrained('users', 'user_id')->cascadeOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained('users', 'user_id')->nullOnDelete();
             $table->string('nis');
             $table->string('nisn')->nullable();
             $table->string('nama_siswa');
             $table->string('tempat_lahir')->nullable();
             $table->date('tanggal_lahir')->nullable();
-            $table->string('jenis_kelamin')->nullable();
+            $table->enum('jenis_kelamin', ['-','laki-laki','perempuan'])->default('-');
             $table->string('alamat')->nullable();
             $table->string('no_telp')->nullable();
-            $table->foreignId('kelas_id')->constrained('kelas', 'kelas_id')->cascadeOnDelete()->nullable();
+            $table->foreignId('kelas_id')->nullable()->constrained('kelas', 'kelas_id')->nullOnDelete();
             $table->string('foto')->nullable();
             $table->dateTime('created_at')->useCurrent();
         });

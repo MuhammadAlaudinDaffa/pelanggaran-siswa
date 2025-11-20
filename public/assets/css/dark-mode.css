@@ -77,6 +77,10 @@ body .sidebar-item.selected .sidebar-link .hide-menu {
     color: #fff !important;
 }
 
+[data-bs-theme="dark"] .sidebartoggler {
+    color: #fff !important;
+}
+
 [data-bs-theme="dark"] .dropdown-menu {
     background-color: #2a2d3a;
     border-color: #3e4651;
@@ -191,6 +195,30 @@ body .sidebar-item.selected .sidebar-link .hide-menu {
 
 [data-bs-theme="dark"] .bg-light {
     background-color: #262a3b !important;
+}
+
+[data-bs-theme="dark"] .bg-light-danger {
+    background-color: #3d1a1a !important;
+}
+
+[data-bs-theme="dark"] .bg-light-warning {
+    background-color: #3d3317 !important;
+}
+
+[data-bs-theme="dark"] .bg-light-success {
+    background-color: #1a3d1a !important;
+}
+
+[data-bs-theme="dark"] .bg-light-info {
+    background-color: #1a2d3d !important;
+}
+
+[data-bs-theme="dark"] .bg-light-primary {
+    background-color: #1a1d3d !important;
+}
+
+[data-bs-theme="dark"] .bg-light-secondary {
+    background-color: #2a2a2a !important;
 }
 
 [data-bs-theme="dark"] .btn-primary {

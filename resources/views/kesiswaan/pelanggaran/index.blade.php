@@ -5,7 +5,7 @@
 @section('content')
 
     <!-- Card Laporan -->
-    @if(\App\Models\Guru::where('user_id', Auth::id())->exists())
+    @if(\App\Models\Guru::where('user_id', Auth::id())->exists() || in_array(Auth::user()->level, ['admin', 'kesiswaan']))
     <div class="row mb-4">
         <div class="col-12">
             <div class="card bg-primary text-white">
@@ -41,7 +41,9 @@
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h5 class="card-title fw-semibold mb-0">
-                            @if(Auth::user()->level === 'kepala_sekolah' && !request('my_reports'))
+                            @if(Auth::user()->level === 'orang_tua')
+                                Data Pelanggaran Anak Anda
+                            @elseif(Auth::user()->level === 'kepala_sekolah' && !request('my_reports'))
                                 Data Pelanggaran Siswa
                             @elseif(request('my_reports') && (in_array(Auth::user()->level, ['admin', 'kesiswaan']) || Auth::user()->level === 'kepala_sekolah'))
                                 Data Laporan Pelanggaran yang Anda Buat
@@ -53,7 +55,7 @@
                                 @endif
                             @endif
                         </h5>
-                        @if(in_array(Auth::user()->level, ['admin', 'kesiswaan', 'kepala_sekolah']) && \App\Models\Guru::where('user_id', Auth::id())->exists())
+                        @if(in_array(Auth::user()->level, ['admin', 'kesiswaan', 'kepala_sekolah']))
                             <div class="btn-group" role="group">
                                 <a href="{{ \App\Helpers\RouteHelper::route('kesiswaan.pelanggaran.index') }}" 
                                    class="btn btn-sm {{ !request('my_reports') ? 'btn-primary' : 'btn-outline-primary' }}">
@@ -208,12 +210,18 @@
                                                 </a>
                                                 @if(Auth::user()->level !== 'kepala_sekolah')
                                                     @php
-                                                        $currentGuru = \App\Models\Guru::where('user_id', Auth::id())->first();
+                                                        $currentUser = Auth::user();
+                                                        $currentGuru = \App\Models\Guru::where('user_id', $currentUser->user_id)->first();
+                                                        $isCreator = false;
+                                                        if ($currentGuru && $currentGuru->guru_id == $item->guru_pencatat) {
+                                                            $isCreator = true;
+                                                        } elseif ($currentUser->user_id == $item->user_pencatat) {
+                                                            $isCreator = true;
+                                                        }
                                                         $canEdit = in_array($item->status_verifikasi, ['menunggu', 'revisi']) &&
-                                                            ($currentGuru && $currentGuru->guru_id == $item->guru_pencatat || 
-                                                             in_array(Auth::user()->level, ['admin', 'kesiswaan']));
+                                                            ($isCreator || in_array($currentUser->level, ['admin', 'kesiswaan']));
                                                     @endphp
-                                                    @if(($currentGuru && $currentGuru->guru_id == $item->guru_pencatat) && $canEdit)
+                                                    @if($canEdit)
                                                         <a href="{{ \App\Helpers\RouteHelper::route('kesiswaan.pelanggaran.edit', $item->pelanggaran_id) }}"
                                                             class="btn btn-outline-warning btn-sm">
                                                             <i class="ti ti-pencil fs-4"></i>

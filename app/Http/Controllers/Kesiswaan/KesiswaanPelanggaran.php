@@ -14,26 +14,27 @@ class KesiswaanPelanggaran extends Controller
     {
         $user = Auth::user();
         
-        // Block student access to index
+        // Block student and orang tua access to index - redirect to their specific views
         if ($user->level === 'siswa') {
             return redirect()->to(\App\Helpers\RouteHelper::route('kesiswaan.siswa_overview.show', $user->user_id));
         }
         
-        // Guru access control - only show students from their class
-        if ($user->level === 'guru') {
-            $guru = \App\Models\Guru::where('user_id', $user->user_id)->first();
-            if (!$guru) {
-                return view('kesiswaan.pelanggaran.index', ['noGuruData' => true]);
+        if ($user->level === 'orang_tua') {
+            $orangTua = \App\Models\Orangtua::where('user_id', $user->user_id)->first();
+            if (!$orangTua) {
+                return redirect()->to(\App\Helpers\RouteHelper::route('orang_tua.index'));
             }
             
-            $kelas = \App\Models\Kelas::where('wali_kelas', $guru->guru_id)->first();
-            if ($kelas) {
-                $query->whereHas('siswa', function($q) use ($kelas) {
-                    $q->where('kelas_id', $kelas->kelas_id);
-                });
-            } else {
-                $query->where('siswa_id', 0); // No results if not wali kelas
-            }
+            $query = Pelanggaran::with([
+                'siswa.kelas.jurusan',
+                'guruPencatat',
+                'guruVerifikator.user',
+                'jenisPelanggaran.kategoriPelanggaran',
+                'tahunAjaran'
+            ])->where('siswa_id', $orangTua->siswa_id)->where('status_verifikasi', 'diverifikasi');
+            
+            $pelanggaran = $query->paginate(10);
+            return view('kesiswaan.pelanggaran.index', compact('pelanggaran'));
         }
         
         $query = Pelanggaran::with([
@@ -43,7 +44,7 @@ class KesiswaanPelanggaran extends Controller
             'jenisPelanggaran.kategoriPelanggaran',
             'tahunAjaran'
         ]);
-
+        
         // Filter logic based on user level and guru status
         if ($user->level === 'kepala_sekolah') {
             // Kepala sekolah can only see verified pelanggaran
@@ -65,12 +66,12 @@ class KesiswaanPelanggaran extends Controller
                 if ($guru) {
                     $query->where('guru_pencatat', $guru->guru_id);
                 } else {
-                    $query->where('guru_pencatat', 0); // No results if not a guru
+                    $query->where('user_pencatat', $user->user_id);
                 }
             }
             // Otherwise show all data (no additional filter)
         } else {
-            // Other users can only see their own reports if they are guru
+            // Guru and other users can only see their own reports if they are guru
             $guru = \App\Models\Guru::where('user_id', $user->user_id)->first();
             if ($guru) {
                 $query->where('guru_pencatat', $guru->guru_id);
@@ -148,6 +149,12 @@ class KesiswaanPelanggaran extends Controller
             if (!$siswa || $pelanggaran->siswa_id != $siswa->siswa_id) {
                 return redirect()->to(\App\Helpers\RouteHelper::route('kesiswaan.siswa_overview.show', Auth::id()));
             }
+        } elseif (Auth::user()->level === 'orang_tua') {
+            // Orang tua access control - only their child's data
+            $orangTua = \App\Models\Orangtua::where('user_id', Auth::id())->first();
+            if (!$orangTua || $pelanggaran->siswa_id != $orangTua->siswa_id) {
+                return redirect()->to(\App\Helpers\RouteHelper::route('orang_tua.index'));
+            }
         } elseif (Auth::user()->level === 'guru') {
             // Guru can only access pelanggaran from their class students
             $guru = \App\Models\Guru::where('user_id', Auth::id())->first();
@@ -155,7 +162,7 @@ class KesiswaanPelanggaran extends Controller
                 return redirect()->to(\App\Helpers\RouteHelper::route('kesiswaan.pelanggaran.index'));
             }
             
-            $kelas = \App\Models\Kelas::where('wali_kelas', $guru->guru_id)->first();
+            $kelas = \App\Models\Kelas::where('wali_kelas_id', $guru->guru_id)->first();
             if (!$kelas || $pelanggaran->siswa->kelas_id != $kelas->kelas_id) {
                 return redirect()->to(\App\Helpers\RouteHelper::route('kesiswaan.pelanggaran.index'));
             }
@@ -192,9 +199,12 @@ class KesiswaanPelanggaran extends Controller
             'bukti_foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
-        $guru = \App\Models\Guru::where('user_id', Auth::id())->first();
-        if (!$guru) {
-            return redirect()->back()->withErrors(['error' => 'Hanya guru yang dapat membuat pelanggaran'])->withInput();
+        $user = Auth::user();
+        $guru = \App\Models\Guru::where('user_id', $user->user_id)->first();
+        
+        // Allow admin/kesiswaan to create even if not in guru table
+        if (!$guru && !in_array($user->level, ['admin', 'kesiswaan'])) {
+            return redirect()->back()->withErrors(['error' => 'Hanya guru, admin, atau kesiswaan yang dapat membuat pelanggaran'])->withInput();
         }
         
         $tahunAjaran = \App\Models\TahunAjaran::where('status_aktif', 1)
@@ -212,7 +222,8 @@ class KesiswaanPelanggaran extends Controller
             'jenis_pelanggaran_id' => $request->jenis_pelanggaran_id,
             'keterangan' => $request->keterangan,
             'tanggal' => date('Y-m-d'),
-            'guru_pencatat' => $guru->guru_id,
+            'guru_pencatat' => $guru ? $guru->guru_id : null,
+            'user_pencatat' => $user->user_id,
             'tahun_ajaran_id' => $tahunAjaran->tahun_ajaran_id,
             'poin' => $jenisPelanggaran->poin,
             'status_verifikasi' => 'menunggu'
@@ -238,8 +249,17 @@ class KesiswaanPelanggaran extends Controller
         
         // Check if current user is the creator (unless admin/kesiswaan)
         if (!in_array(Auth::user()->level, ['admin', 'kesiswaan'])) {
-            $currentGuru = \App\Models\Guru::where('user_id', Auth::id())->first();
-            if (!$currentGuru || $currentGuru->guru_id != $pelanggaran->guru_pencatat) {
+            $currentUser = Auth::user();
+            $currentGuru = \App\Models\Guru::where('user_id', $currentUser->user_id)->first();
+            
+            $isCreator = false;
+            if ($currentGuru && $currentGuru->guru_id == $pelanggaran->guru_pencatat) {
+                $isCreator = true;
+            } elseif ($currentUser->user_id == $pelanggaran->user_pencatat) {
+                $isCreator = true;
+            }
+            
+            if (!$isCreator) {
                 return redirect()->to(\App\Helpers\RouteHelper::route('kesiswaan.pelanggaran.index'))->with('error', 'Anda hanya dapat mengedit pelanggaran yang Anda buat sendiri');
             }
         }
@@ -258,8 +278,17 @@ class KesiswaanPelanggaran extends Controller
         
         // Check if current user is the creator (unless admin/kesiswaan)
         if (!in_array(Auth::user()->level, ['admin', 'kesiswaan'])) {
-            $currentGuru = \App\Models\Guru::where('user_id', Auth::id())->first();
-            if (!$currentGuru || $currentGuru->guru_id != $pelanggaran->guru_pencatat) {
+            $currentUser = Auth::user();
+            $currentGuru = \App\Models\Guru::where('user_id', $currentUser->user_id)->first();
+            
+            $isCreator = false;
+            if ($currentGuru && $currentGuru->guru_id == $pelanggaran->guru_pencatat) {
+                $isCreator = true;
+            } elseif ($currentUser->user_id == $pelanggaran->user_pencatat) {
+                $isCreator = true;
+            }
+            
+            if (!$isCreator) {
                 return redirect()->to(\App\Helpers\RouteHelper::route('kesiswaan.pelanggaran.index'))->with('error', 'Anda hanya dapat mengedit pelanggaran yang Anda buat sendiri');
             }
         }

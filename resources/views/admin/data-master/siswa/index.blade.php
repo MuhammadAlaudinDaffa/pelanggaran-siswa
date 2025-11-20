@@ -116,9 +116,13 @@
                                                 <span class="badge bg-primary">{{ $item->kelas->nama_kelas ?? '-' }}</span>
                                             </td>
                                             <td class="border-bottom-0">
-                                                <span class="badge {{ $item->jenis_kelamin == 'laki-laki' ? 'bg-info' : 'bg-warning' }}">
-                                                    {{ ucfirst($item->jenis_kelamin ?? '-') }}
-                                                </span>
+                                                @if($item->jenis_kelamin == 'laki-laki')
+                                                    <span class="badge bg-info">Laki-laki</span>
+                                                @elseif($item->jenis_kelamin == 'perempuan')
+                                                    <span class="badge bg-pink">Perempuan</span>
+                                                @else
+                                                    <span class="badge bg-secondary">-</span>
+                                                @endif
                                             </td>
                                             <td class="border-bottom-0">
                                                 <a class="btn btn-outline-info btn-sm"

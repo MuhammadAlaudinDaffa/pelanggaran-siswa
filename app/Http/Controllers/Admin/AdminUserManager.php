@@ -31,7 +31,12 @@ class AdminUserManager extends Controller
     public function create()
     {
         $kelas = \App\Models\Kelas::with('jurusan')->get();
-        return view('admin.data-master.user.create', compact('kelas'));
+        
+        // Get next NIS number
+        $lastSiswa = \App\Models\Siswa::orderBy('nis', 'desc')->first();
+        $nextNis = $lastSiswa ? (string)((int)$lastSiswa->nis + 1) : '1001';
+        
+        return view('admin.data-master.user.create', compact('kelas', 'nextNis'));
     }
 
     public function store(Request $request)

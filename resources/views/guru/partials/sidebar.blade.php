@@ -54,6 +54,20 @@
                             <span class="hide-menu">Data Siswa</span>
                         </a>
                     </li>
+
+                    <!-- Lapor Pelanggar Menu -->
+                    <li class="nav-small-cap">
+                        <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                        <span class="hide-menu">Pelanggaran</span>
+                    </li>
+                    <li class="sidebar-item {{ request()->routeIs('guru.kesiswaan.pelanggaran.*') ? 'selected' : '' }}">
+                        <a class="sidebar-link" href="{{ \App\Helpers\RouteHelper::route('kesiswaan.pelanggaran.index') }}" aria-expanded="{{ request()->routeIs('guru.kesiswaan.siswa_overview.*') ? 'true' : 'false' }}">
+                            <span>
+                                <i class="ti ti-alert-triangle"></i>
+                            </span>
+                            <span class="hide-menu">Laporan Pelanggar</span>
+                        </a>
+                    </li>
                 @endif
             </ul>
         </nav>

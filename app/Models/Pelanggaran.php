@@ -13,6 +13,7 @@ class Pelanggaran extends Model
     protected $fillable = [
         'siswa_id',
         'guru_pencatat',
+        'user_pencatat',
         'jenis_pelanggaran_id',
         'tahun_ajaran_id',
         'poin',
@@ -38,6 +39,11 @@ class Pelanggaran extends Model
     public function guruPencatat()
     {
         return $this->belongsTo(Guru::class, 'guru_pencatat');
+    }
+
+    public function userPencatat()
+    {
+        return $this->belongsTo(User::class, 'user_pencatat');
     }
 
     public function guruVerifikator()

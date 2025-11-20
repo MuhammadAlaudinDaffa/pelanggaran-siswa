@@ -76,8 +76,8 @@ class KesiswaanSanksi extends Controller
             'pelanggaran_id' => 'required|exists:pelanggaran,pelanggaran_id',
             'jenis_sanksi' => 'required|string|max:255',
             'deskripsi_sanksi' => 'nullable|string',
-            'tanggal_mulai' => 'required|date',
-            'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai',
+            'tanggal_mulai' => 'nullable|date',
+            'tanggal_selesai' => 'nullable|date',
             'status' => 'required|in:direncanakan,berjalan,selesai,ditunda,dibatalkan',
             'guru_penanggungjawab' => 'nullable|exists:guru,guru_id',
             'catatan_pelaksanaan' => 'nullable|string'
@@ -92,7 +92,14 @@ class KesiswaanSanksi extends Controller
             return redirect()->back()->with('error', 'Pelanggaran tidak ditemukan atau belum diverifikasi');
         }
 
-        $sanksi = Sanksi::create($request->all());
+        $data = $request->all();
+        
+        // Auto-fill tanggal_mulai if empty and status is selesai or dibatalkan
+        if (empty($data['tanggal_mulai']) && in_array($data['status'], ['selesai', 'dibatalkan'])) {
+            $data['tanggal_mulai'] = date('Y-m-d');
+        }
+
+        $sanksi = Sanksi::create($data);
 
         return redirect()->to(\App\Helpers\RouteHelper::route('kesiswaan.sanksi.show', ['sanksi' => $sanksi->sanksi_id]))
             ->with('success', 'Sanksi berhasil ditambahkan');
@@ -121,14 +128,21 @@ class KesiswaanSanksi extends Controller
         $request->validate([
             'jenis_sanksi' => 'required|string|max:255',
             'deskripsi_sanksi' => 'nullable|string',
-            'tanggal_mulai' => 'required|date',
-            'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai',
+            'tanggal_mulai' => 'nullable|date',
+            'tanggal_selesai' => 'nullable|date',
             'status' => 'required|in:direncanakan,berjalan,selesai,ditunda,dibatalkan',
             'guru_penanggungjawab' => 'nullable|exists:guru,guru_id',
             'catatan_pelaksanaan' => 'nullable|string'
         ]);
 
-        $sanksi->update($request->except(['pelanggaran_id']));
+        $data = $request->except(['pelanggaran_id']);
+        
+        // Auto-fill tanggal_mulai if empty and status is selesai or dibatalkan
+        if (empty($data['tanggal_mulai']) && in_array($data['status'], ['selesai', 'dibatalkan'])) {
+            $data['tanggal_mulai'] = date('Y-m-d');
+        }
+
+        $sanksi->update($data);
 
         return redirect()->to(\App\Helpers\RouteHelper::route('kesiswaan.sanksi.index'))
             ->with('success', 'Sanksi berhasil diperbarui');
