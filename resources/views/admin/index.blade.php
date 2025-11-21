@@ -34,7 +34,7 @@
 							</form>
 						</div>
 					</div>
-					<div id="chart"></div>
+					<div id="chart" class="simple-chart simple-bar-chart"></div>
 				</div>
 			</div>
 		</div>
@@ -297,69 +297,33 @@
 	// Chart data from PHP
 	const chartData = @json($chartData);
 	
-	// Chart configuration
-	const options = {
+	// Create simplified area chart
+	const data = {
 		series: [{
 			name: 'Pelanggaran',
-			data: chartData.pelanggaran,
-			color: '#dc3545'
+			data: chartData.pelanggaran
 		}, {
 			name: 'Prestasi',
-			data: chartData.prestasi,
-			color: '#198754'
+			data: chartData.prestasi
 		}],
-		chart: {
-			type: 'area',
-			height: 350,
-			toolbar: {
-				show: false
-			}
-		},
-		dataLabels: {
-			enabled: false
-		},
-		stroke: {
-			curve: 'smooth',
-			width: 2
-		},
-		xaxis: {
-			categories: chartData.months,
-			labels: {
-				style: {
-					colors: '#8c8c8c',
-					fontSize: '12px'
-				}
-			}
-		},
-		yaxis: {
-			labels: {
-				style: {
-					colors: '#8c8c8c',
-					fontSize: '12px'
-				}
-			}
-		},
-		legend: {
-			position: 'top',
-			horizontalAlign: 'left'
-		},
-		fill: {
-			type: 'gradient',
-			gradient: {
-				shadeIntensity: 1,
-				opacityFrom: 0.7,
-				opacityTo: 0.3,
-				stops: [0, 90, 100]
-			}
-		},
-		grid: {
-			borderColor: '#e7e7e7',
-			strokeDashArray: 5
-		}
+		categories: chartData.months
 	};
 	
-	// Render chart
-	const chart = new ApexCharts(document.querySelector("#chart"), options);
-	chart.render();
+	// Use simplified bar chart
+	const chart = simpleCharts.createBarChart(
+		document.querySelector('#chart'),
+		data,
+		{ height: 350 }
+	);
+	
+	// Update chart when theme changes
+	window.addEventListener('themeChanged', function() {
+		chart.destroy();
+		simpleCharts.createBarChart(
+			document.querySelector('#chart'),
+			data,
+			{ height: 350 }
+		);
+	});
 </script>
 @endpush

@@ -1,0 +1,238 @@
+/* Simple Chart Styles - Matching Page Design */
+
+/* Chart Container Styling */
+.chart-container {
+    background: transparent;
+    border-radius: 8px;
+    padding: 0;
+}
+
+/* ApexCharts Customization */
+.apexcharts-canvas {
+    border-radius: 8px;
+}
+
+/* Simplified Chart Colors - Matching Theme */
+:root {
+    --chart-primary: #0d6efd;
+    --chart-success: #198754;
+    --chart-danger: #dc3545;
+    --chart-warning: #ffc107;
+    --chart-info: #0dcaf0;
+    --chart-secondary: #6c757d;
+    --chart-light: #f8f9fa;
+    --chart-dark: #212529;
+}
+
+/* Dark Mode Chart Colors */
+[data-bs-theme="dark"] {
+    --chart-primary: #6ea8fe;
+    --chart-success: #75b798;
+    --chart-danger: #ea868f;
+    --chart-warning: #ffda6a;
+    --chart-info: #6edff6;
+    --chart-secondary: #adb5bd;
+    --chart-light: #495057;
+    --chart-dark: #f8f9fa;
+}
+
+/* Simple Chart Styles */
+.simple-chart {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.simple-chart .apexcharts-toolbar {
+    display: none !important;
+}
+
+.simple-chart .apexcharts-legend {
+    padding: 0 !important;
+    margin: 10px 0 0 0 !important;
+}
+
+.simple-chart .apexcharts-legend-series {
+    margin: 0 10px 0 0 !important;
+}
+
+/* Grid Lines - Minimal */
+.simple-chart .apexcharts-grid-borders line,
+.simple-chart .apexcharts-gridlines-horizontal line,
+.simple-chart .apexcharts-gridlines-vertical line {
+    stroke: var(--bs-border-color) !important;
+    stroke-width: 1 !important;
+    stroke-dasharray: 3 !important;
+    opacity: 0.3 !important;
+}
+
+/* Axis Labels */
+.simple-chart .apexcharts-xaxis-label,
+.simple-chart .apexcharts-yaxis-label {
+    fill: var(--bs-secondary-color) !important;
+    font-size: 11px !important;
+    font-weight: 400 !important;
+}
+
+/* Data Labels */
+.simple-chart .apexcharts-datalabel {
+    fill: var(--bs-body-color) !important;
+    font-size: 11px !important;
+    font-weight: 500 !important;
+}
+
+/* Tooltip Styling */
+.simple-chart .apexcharts-tooltip {
+    background: var(--bs-body-bg) !important;
+    border: 1px solid var(--bs-border-color) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    border-radius: 6px !important;
+}
+
+.simple-chart .apexcharts-tooltip-title {
+    background: transparent !important;
+    border: none !important;
+    color: var(--bs-body-color) !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    padding: 8px 12px 4px 12px !important;
+}
+
+.simple-chart .apexcharts-tooltip-series-group {
+    background: transparent !important;
+    padding: 4px 12px 8px 12px !important;
+}
+
+.simple-chart .apexcharts-tooltip-text-y-label,
+.simple-chart .apexcharts-tooltip-text-y-value {
+    color: var(--bs-body-color) !important;
+    font-size: 11px !important;
+}
+
+/* Simple Area Chart */
+.simple-area-chart .apexcharts-area-series path {
+    stroke-width: 2 !important;
+}
+
+/* Simple Bar Chart */
+.simple-bar-chart .apexcharts-bar-area {
+    border-radius: 4px 4px 0 0 !important;
+}
+
+/* Simple Line Chart */
+.simple-line-chart .apexcharts-line {
+    stroke-width: 3 !important;
+}
+
+.simple-line-chart .apexcharts-point {
+    r: 4 !important;
+    stroke-width: 2 !important;
+}
+
+/* Simple Donut Chart */
+.simple-donut-chart .apexcharts-pie-label {
+    fill: var(--bs-body-color) !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+}
+
+/* Responsive Chart Heights */
+.chart-sm { height: 200px !important; }
+.chart-md { height: 300px !important; }
+.chart-lg { height: 400px !important; }
+
+/* Card Chart Integration */
+.card .chart-container {
+    margin: -1rem -1rem 0 -1rem;
+    padding: 1rem;
+}
+
+.card-chart {
+    border: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.card-chart .card-body {
+    padding: 1.5rem;
+}
+
+/* Statistics Cards with Charts */
+.stat-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--bs-secondary-color);
+    font-weight: 500;
+}
+
+/* Mini Charts in Cards */
+.mini-chart {
+    height: 60px !important;
+}
+
+.mini-chart .apexcharts-svg {
+    background: transparent !important;
+}
+
+.mini-chart .apexcharts-grid,
+.mini-chart .apexcharts-xaxis,
+.mini-chart .apexcharts-yaxis {
+    display: none !important;
+}
+
+/* Progress Ring Charts */
+.progress-ring {
+    width: 80px;
+    height: 80px;
+}
+
+.progress-ring .apexcharts-radialbar-track {
+    stroke: var(--bs-border-color) !important;
+    stroke-width: 8 !important;
+}
+
+.progress-ring .apexcharts-radialbar-area {
+    stroke-width: 8 !important;
+}
+
+/* Animation Improvements */
+.simple-chart .apexcharts-series {
+    animation: chartFadeIn 0.8s ease-in-out;
+}
+
+@keyframes chartFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Loading State */
+.chart-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    color: var(--bs-secondary-color);
+}
+
+.chart-loading .spinner-border {
+    width: 2rem;
+    height: 2rem;
+}

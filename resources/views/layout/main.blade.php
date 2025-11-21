@@ -8,6 +8,7 @@
     <link rel="shortcut icon" type="image/png" href="{{ asset('assets/images/logos/favicon.png') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/styles.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/dark-mode.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/css/simple-charts.css') }}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.35.0/tabler-icons.min.css">
 </head>
 
@@ -76,6 +77,7 @@
     <script src="{{  asset('assets/js/app.min.js') }}"></script>
     <script src="{{  asset('assets/libs/apexcharts/dist/apexcharts.min.js') }}"></script>
     <script src="{{  asset('assets/libs/simplebar/dist/simplebar.js') }}"></script>
+    <script src="{{  asset('assets/js/simple-charts.js') }}"></script>
 </script>
     <script>
         // Apply theme before DOM loads to prevent flash

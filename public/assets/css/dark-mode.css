@@ -286,3 +286,28 @@ body .sidebar-item.selected .sidebar-link .hide-menu {
 [data-bs-theme="dark"] #navLoader .spinner-border {
     color: #adb5bd;
 }
+
+/* Chart Integration with Dark Mode */
+[data-bs-theme="dark"] .simple-chart .apexcharts-tooltip {
+    background: #2a2d3a !important;
+    border-color: #3e4651 !important;
+    color: #adb5bd !important;
+}
+
+[data-bs-theme="dark"] .simple-chart .apexcharts-tooltip-title {
+    color: #fff !important;
+}
+
+[data-bs-theme="dark"] .simple-chart .apexcharts-tooltip-text-y-label,
+[data-bs-theme="dark"] .simple-chart .apexcharts-tooltip-text-y-value {
+    color: #adb5bd !important;
+}
+
+[data-bs-theme="dark"] .card-chart {
+    background-color: #2a2d3a;
+    border-color: #3e4651;
+}
+
+[data-bs-theme="dark"] .stat-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
